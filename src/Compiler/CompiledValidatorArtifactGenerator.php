@@ -69,18 +69,11 @@ final readonly class CompiledValidatorArtifactGenerator
 
         $use = $this->typeRequiresRecursion($type) ? ', &$validate' : '';
 
-        return \sprintf(
-            <<<'PHP'
-                    \%s::class => (static function () use ($value, $prefix%s): array {
-                        $violations = [];%s
-
-                        return $violations;
-                    })(),
-                PHP,
-            $type->className,
-            $use,
-            $body,
-        );
+        return $this->stubs->renderMatchArms(__DIR__ . '/../../resources/stubs/type_case.php.stub', [
+            'CLASS' => $type->className,
+            'VALIDATE_USE' => $use,
+            'BODY' => $body,
+        ]);
     }
 
     private function rule(SerializedFieldNode $field, ValidationRuleNode $rule): string

@@ -1,0 +1,5 @@
+        \{{CLASS}}::class => (static function () use ($value, $prefix{{VALIDATE_USE}}): array {
+            $violations = [];{{BODY}}
+
+            return $violations;
+        })(),
