@@ -1,0 +1,47 @@
+{
+    "name": "contempt/validation",
+    "description": "Compiled structural boundary validation. Violations are values, never exceptions.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/contempt-framework/validation",
+    "require": {
+        "contempt/attributes": "self.version",
+        "contempt/compiler": "self.version",
+        "contempt/contracts": "self.version",
+        "contempt/core": "self.version",
+        "php": "^8.5"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpunit/phpunit": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Contempt\\Validation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Contempt\\Validation\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "analyse": "phpstan analyse --memory-limit=1G --no-progress",
+        "test": "phpunit",
+        "qa": [
+            "@analyse",
+            "@test"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
