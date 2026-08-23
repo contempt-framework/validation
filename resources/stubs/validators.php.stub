@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+$validate = static function (object $value, string $prefix = ''){{VALIDATE_USE}}: array {
+    return match ($value::class) {{{CASES}}        default => throw new \Contempt\Validation\Exception\UnknownValidationType(sprintf('No generated nested validator exists for %s.', $value::class)),
+    };
+};
+
+return [{{REGISTRATIONS}}];

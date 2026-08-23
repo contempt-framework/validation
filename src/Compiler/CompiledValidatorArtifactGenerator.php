@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Contempt\Validation\Compiler;
 
 use Contempt\Compiler\CodeGeneration\GeneratedArtifact;
+use Contempt\Compiler\CodeGeneration\PhpStubRenderer;
 use Contempt\Compiler\Graph\SerializedFieldNode;
 use Contempt\Compiler\Graph\SerializedTypeNode;
 use Contempt\Compiler\Graph\SerializedTypeNodes;
@@ -14,6 +15,8 @@ use Contempt\Compiler\Graph\ValidationRuleNode;
 /** Generates direct property-access structural validators from the Application Graph. */
 final readonly class CompiledValidatorArtifactGenerator
 {
+    public function __construct(private PhpStubRenderer $stubs = new PhpStubRenderer()) {}
+
     public function generate(SerializedTypeNodes $types): GeneratedArtifact
     {
         $cases = [];
@@ -31,22 +34,10 @@ final readonly class CompiledValidatorArtifactGenerator
 
         $caseSource = $cases === [] ? '' : "\n" . implode("\n", $cases) . "\n";
         $registrationSource = $registrations === [] ? '' : "\n" . implode("\n", $registrations) . "\n";
-        $source = strtr(<<<'PHP'
-            <?php
-
-            declare(strict_types=1);
-
-            $validate = static function (object $value, string $prefix = '')%VALIDATE_USE%: array {
-                return match ($value::class) {%CASES%        default => throw new \Contempt\Validation\Exception\UnknownValidationType(sprintf('No generated nested validator exists for %s.', $value::class)),
-                };
-            };
-
-            return [%REGISTRATIONS%];
-
-            PHP, [
-            '%CASES%' => $caseSource,
-            '%REGISTRATIONS%' => $registrationSource,
-            '%VALIDATE_USE%' => $recursive ? ' use (&$validate)' : '',
+        $source = $this->stubs->render(__DIR__ . '/../../resources/stubs/validators.php.stub', [
+            'CASES' => $caseSource,
+            'REGISTRATIONS' => $registrationSource,
+            'VALIDATE_USE' => $recursive ? ' use (&$validate)' : '',
         ]);
 
         return new GeneratedArtifact('validators.php', $source);
